@@ -51,6 +51,13 @@ fn shadowing() {
 
     println!("The value of x is: {x}"); // prints the second value
 
+    // *********************************************************************************************
+    let value = 1;
+    println!("value = {value}"); // prints 1
+
+    let value = 2;
+    println!("value = {value}"); // prints 2
+
     /*
     Shadowing is different from marking a variable as mutable because we'll get a compile-time error
     if we accidentally try to reassign to this variable without using the let keyword. By using let,
@@ -78,4 +85,6 @@ fn shadowing() {
     // mut_spaces = mut_spaces.len(); // this will raise "error[E0308]: mismatched types"
 }
 
-fn main() {}
+fn main() {
+    shadowing();
+}
