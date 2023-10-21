@@ -155,6 +155,30 @@ fn repetition_with_loops() {
         }
     };
     println!("The result is {result}"); // prints 20
+
+    /*
+    If you have loops within loops, "break" and "continue" apply to the innermost loop at that
+    point. You can optionally specify a LOOP LABEL that you can then use with "break" or "continue"
+    to specify that those keywords apply to the labeled loop instead of the innermost loop. Loop
+    labels must begin with a single quote:
+     */
+
+    let mut count = 0;
+    'counting_up: loop {
+        println!("count = {count}");
+        let mut remaining = 10;
+        loop {
+            println!("remaining = {remaining}");
+            if remaining == 9 {
+                break;
+            }
+            if count == 2 {
+                break 'counting_up;
+            }
+            remaining -= 1;
+        }
+        count += 1;
+    }
 }
 
 fn main() {
