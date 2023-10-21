@@ -179,6 +179,82 @@ fn repetition_with_loops() {
         }
         count += 1;
     }
+
+    /*
+    Conditional Loops with "while"
+
+    A program will often need to evaluate a condition within a loop. While the condition is true,
+    the loop runs. When the condition ceases to be true, the program calls break, stopping the loop.
+    It is possible to implement behavior like this using a combination of "loop", "if", "else" and
+    "break". However, this pattern is so common that Rust has a built-in language construct for it,
+    called a "while" loop.
+     */
+
+    let mut number = 3;
+    while number != 0 {
+        println!("number = {number}");
+        number -= 1;
+    }
+    println!("Exit the while loop, number = {number}");
+    /*
+    The following is an example of a loop that will never return:
+
+    let number = 3;
+    while number != 0 {
+        let number = number - 1;
+    }
+    println!("Just exit the second while loop!");
+    */
+
+    /*
+    You can use the "while" construct to loop over the elements of a collection, such as an array:
+     */
+
+    let a = [10, 20, 30, 40, 50];
+    let mut index = 0;
+    while index < 5 {
+        println!("a[{index}] = {}", a[index]);
+        index += 1;
+    }
+
+    /*
+    The approach of using a "while" construct to solve the previous problem is error prone; we could
+    cause the program to panic if the index value or test condition is incorrect. For example, if
+    you changed the definition of the "a" array to have four elements but forgot to update the
+    condition to "while index < 4", the code would panic. It's also slow, because the compiler adds
+    runtime code to perform the conditional check of whether the index is within the bounds of the
+    array on every iteration through the loop.as
+
+    As a more concise alternative, you can use a "for" loop to execute some code for each item in a
+    collection:
+     */
+
+    let a = [10, 20, 30, 40, 50];
+    for element in a {
+        println!("element = {element}");
+    }
+
+    /*
+    When we run the previous code, we'll see the same output, but more importantly, we've now
+    increased the safety of the code and eliminated the chance of bugs that might result from going
+    beyond the end of the array or not going far enough and missing some items.
+
+    Using the "for" loop, you wouldn't need to remember to change any other code if yu changed the
+    number of values in the array.
+
+    The safety and conciseness of "for" loops makes them the most commonly used loop construct in
+    Rust. Even in situations in which you want to run some code a certain number of times, as in the
+    countdown example that we used a "while" loop, most Rustaceans would use a "for" loop. The way
+    to do that would be to use a "Range", provided by the standard library, which generates all
+    numbers in sequence starting from one number and ending before another number.
+
+    Here is what the countdown would look like using a "for" loop and another method we've not yet
+    talked about, "rev", to reverse the range:
+     */
+
+    for number in (1..4).rev() {
+        println!("number = {number}");
+    }
 }
 
 fn main() {
