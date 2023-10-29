@@ -90,7 +90,7 @@ However, representing the same concept using just an enum is more concise: rathe
 inside a struct, we can put data directly into each enum variant. This new definition of the IpAddr
 enum says that both V4 and V6 variants will have associated String values:
  */
-
+/*
 fn main() {
     enum IpAddr {
         V4(String),
@@ -101,3 +101,234 @@ fn main() {
 
     let loopback = IpAddr::V6(String::from("::1"));
 }
+*/
+/*
+We attach data to each variant of the enum directly, so there is no need for an extra struct. Here,
+it's also easier to see another detail of how enums work: the name of each enum variant that we
+define also becomes a function that constructs an instance of the enum. That is, IpAddr::V4() is a
+function call that takes a String argument and returns an instance of the IpAddr type. We
+automatically get this constructor function defined as a result of defining the enum.
+
+There’s another advantage to using an enum rather than a struct: each variant can have different
+types and amounts of associated data. Version four IP addresses will always have four numeric
+components that will have values between 0 and 255. If we wanted to store V4 addresses as four u8
+values but still express V6 addresses as one String value, we wouldn’t be able to with a struct.
+Enums handle this case with ease:
+ */
+/*
+fn main() {
+    enum IpAddr {
+        V4(u8, u8, u8, u8),
+        V6(String),
+    }
+
+    let home = IpAddr::V4(127, 0, 0, 1);
+
+    let loopback = IpAddr::V6(String::from("::1"));
+
+}
+*/
+/*
+We’ve shown several different ways to define data structures to store version four and version six
+IP addresses. However, as it turns out, wanting to store IP addresses and encode which kind they
+are is so common that the standard library has a definition we can use! Let’s look at how the
+standard library defines IpAddr: it has the exact enum and variants that we’ve defined and used,
+but it embeds the address data inside the variants in the form of two different structs, which are
+defined differently for each variant:
+
+struct Ipv4Addr {
+    // --snip--
+}
+
+struct Ipv6Addr {
+    // --snip--
+}
+
+enum IpAddr {
+    V4(Ipv4Addr),
+    V6(Ipv6Addr),
+}
+
+This code illustrates that you can put any kind of data inside an enum variant: strings, numeric
+types, or structs, for example. You can even include another enum! Also, standard library types are
+often not much more complicated than what you might come up with.
+
+Note that even though the standard library contains a definition for IpAddr, we can still create and
+use our own definition without conflict because we haven’t brought the standard library’s definition
+into our scope. We’ll talk more about bringing types into scope in Chapter 7.
+
+Let's look at another example of an enum; this one has a wide variety of types embedded in its
+variants:
+ */
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+/*
+This enum has four variants with different types:
+
+- Quit has no data associated with it at all
+- Move has named fields, like a struct does
+- Write includes a single String
+- ChangeColor includes three i32 values
+
+Defining an enum with variants such as the ones in the previous code is similar to defining
+different kinds of struct definitions, except the enum doesn't use the struct keyword and all the
+variants are grouped together under the Message type. The following structs could hold the same
+data that the preceding enum variants hold:
+
+struct QuitMessage;
+
+// unit struct
+struct MoveMessage {
+    x: i32,
+    y: i32,
+}
+
+struct WriteMessage(String);
+
+// tuple struct
+struct ChangeColorMessage(i32, i32, i32); // tuple struct
+
+But if we used the different structs, each of which has its own type, we couldn't as easily define
+a function to take any of these kinds of messages as we could with the Message enum, which is a
+single type.
+
+There is one more similarity between enums and structs: just as we're able to define methods on
+structs using impl, we're also able to define methods on enums. Here's a method named call that we
+could define on our Message enum:
+ */
+/*
+fn main() {
+    impl Message {
+        fn call(&self) {
+            // method body could be defined here
+        }
+    }
+    let m = Message::Write(String::from("hello"));
+    m.call();
+}
+*/
+/*
+The body of the method would use self to get the value that we called the method on. In this
+example, we've created a variable m that has the value Message::Write(String::from("hello")), and
+that is what "self" will be in the body of the call method when m.call() runs.
+
+Let's look at another enum in the standard library that is very common and useful: Option.
+
+
+The Option enum and its advantages of null values:
+
+This section explores a case study of Option, which is another enum defined by the standard library.
+The Option type encodes the very common scenario in which a value could be something or it could be
+nothing.
+
+For example, if you request the first item in a non-empty list, you would get a value. If you
+request the first item in an empty list, you would get nothing. Expressing this concept in terms of
+the type system means the compiler can check whether you’ve handled all the cases you should be
+handling; this functionality can prevent bugs that are extremely common in other programming
+languages.
+
+Programming language design is often thought of in terms of which features you include, but the
+features you exclude are important too. Rust doesn’t have the null feature that many other languages
+have. Null is a value that means there is no value there. In languages with null, variables can
+always be in one of two states: null or not-null.
+
+In his 2009 presentation “Null References: The Billion Dollar Mistake,” Tony Hoare, the inventor of
+null, has this to say:
+
+"
+I call it my billion-dollar mistake. At that time, I was designing the first comprehensive type
+system for references in an object-oriented language. My goal was to ensure that all use of
+references should be absolutely safe, with checking performed automatically by the compiler. But I
+couldn’t resist the temptation to put in a null reference, simply because it was so easy to
+implement. This has led to innumerable errors, vulnerabilities, and system crashes, which have
+probably caused a billion dollars of pain and damage in the last forty years.
+"
+
+The problem with null values is that if you try to use a null value as a not-null value, you’ll get
+an error of some kind. Because this null or not-null property is pervasive, it’s extremely easy to
+make this kind of error.
+
+However, the concept that null is trying to express is still a useful one: a null is a value that is
+currently invalid or absent for some reason.
+
+The problem isn’t really with the concept but with the particular implementation. As such, Rust does
+not have nulls, but it does have an enum that can encode the concept of a value being present or
+absent. This enum is Option<T>, and it is defined by the standard library as follows:
+
+enum Option<T> {
+    None,
+    Some(T),
+}
+
+The Option<T> enum is so useful that it’s even included in the prelude; you don’t need to bring it
+into scope explicitly. Its variants are also included in the prelude: you can use Some and None
+directly without the Option:: prefix. The Option<T> enum is still just a regular enum, and Some(T)
+and None are still variants of type Option<T>.
+ */
+/*
+fn main() {
+    let some_number = Some(5);
+    let some_char = Some('e');
+
+    let absent_number: Option<i32> = None;
+}
+*/
+/*
+The type of some_number is Option<i32>. The type of some_char is Option<char>, which is a different
+type. Rust can infer these types because we’ve specified a value inside the Some variant. For
+absent_number, Rust requires us to annotate the overall Option type: the compiler can’t infer the
+type that the corresponding Some variant will hold by looking only at a None value. Here, we tell
+Rust that we mean for absent_number to be of type Option<i32>.
+
+When we have a Some value, we know that a value is present and the value is held within the Some.
+When we have a None value, in some sense it means the same thing as null: we don’t have a valid
+value. So why is having Option<T> any better than having null?
+
+In short, because Option<T> and T (where T can be any type) are different types, the compiler won’t
+let us use an Option<T> value as if it were definitely a valid value. For example, this code won’t
+compile, because it’s trying to add an i8 to an Option<i8>:
+
+    let x: i8 = 5;
+    let y: Option<i8> = Some(5);
+
+    let sum = x + y;
+
+If we run this code, we get an error message like this one:
+"error[E0277]: cannot add `Option<i8>` to `i8`"
+
+Intense! In effect, this error message means that Rust doesn’t understand how to add an i8 and an
+Option<i8>, because they’re different types. When we have a value of a type like i8 in Rust, the
+compiler will ensure that we always have a valid value. We can proceed confidently without having to
+check for null before using that value. Only when we have an Option<i8> (or whatever type of value
+we’re working with) do we have to worry about possibly not having a value, and the compiler will
+make sure we handle that case before using the value.
+
+In other words, you have to convert an Option<T> to a T before you can perform T operations with it.
+Generally, this helps catch one of the most common issues with null: assuming that something isn’t
+null when it actually is.
+
+Eliminating the risk of incorrectly assuming a not-null value helps you to be more confident in your
+code. In order to have a value that can possibly be null, you must explicitly opt in by making the
+type of that value Option<T>. Then, when you use that value, you are required to explicitly handle
+the case when the value is null. Everywhere that a value has a type that isn’t an Option<T>, you can
+safely assume that the value isn’t null. This was a deliberate design decision for Rust to limit
+null’s pervasiveness and increase the safety of Rust code.
+
+So how do you get the T value out of a Some variant when you have a value of type Option<T> so that
+you can use that value? The Option<T> enum has a large number of methods that are useful in a
+variety of situations; you can check them out in its documentation. Becoming familiar with the
+methods on Option<T> will be extremely useful in your journey with Rust.
+
+In general, in order to use an Option<T> value, you want to have code that will handle each variant.
+You want some code that will run only when you have a Some(T) value, and this code is allowed to use
+the inner T. You want some other code to run only if you have a None value, and that code doesn’t
+have a T value available. The match expression is a control flow construct that does just this when
+used with enums: it will run different code depending on which variant of the enum it has, and that
+code can use the data inside the matching value.
+ */
