@@ -79,6 +79,10 @@ fn accessing_values_from_vector() {
     }
 }
 
+fn raising_error_from_vector() {
+    let
+}
+
 fn main() {
-    println!("Hello, world!");
+   accessing_values_from_vector();
 }
