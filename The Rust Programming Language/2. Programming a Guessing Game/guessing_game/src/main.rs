@@ -1,12 +1,16 @@
-use std::io;
 use rand::Rng;
 use std::cmp::Ordering;
+use std::io;
+
+fn generate_secret_number() -> u32 {
+    rand::thread_rng().gen_range(1..=10)
+}
 
 fn main() {
     println!("Guess the number!");
     println!("Please input your guess:");
 
-    let secret_number = rand::thread_rng().gen_range(1..=100);
+    let secret_number = generate_secret_number();
 
     loop {
         let mut guess = String::new();
@@ -17,7 +21,7 @@ fn main() {
 
         let guess: u32 = match guess.trim().parse() {
             Ok(num) => num,
-            Err(_) => continue
+            Err(_) => continue,
         };
 
         println!("You guessed: {guess}");
