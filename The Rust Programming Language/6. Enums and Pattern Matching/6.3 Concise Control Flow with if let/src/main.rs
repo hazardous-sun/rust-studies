@@ -101,7 +101,7 @@ prevent errors. When enum values have data inside them, you can use match or if 
 use those values, depending on how many cases you need to handle.
 
 Your Rust programs can now express concepts in your domain using structs and enums. Creating custom
-types to use in your API ensures type safety: the compiler will make certain your functions only get
+types to use in your API ensures type safety: the compiler will make certain your 3.3 Functions only get
 values of the type each function expects.
 
 

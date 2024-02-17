@@ -173,7 +173,7 @@ call. Here's what the output of this example looks like:
 
 
      Finished dev [unoptimized + debuginfo] target(s) in 0.29s
-     Running `target/debug/example_program_using_structs`
+     Running `target/debug/5.2 An Example Program Using Structs`
 [src/main.rs:161] 30 * scale = 60
 [src/main.rs:165] &rect1 = Rectangle {
     height: 60,

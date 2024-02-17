@@ -223,7 +223,7 @@ take one default action. Imagine we’re implementing a game where, if you roll 
 your player doesn’t move, but instead gets a new fancy hat. If you roll a 7, your player loses a
 fancy hat. For all other values, your player moves that number of spaces on the game board. Here’s a
 match that implements that logic, with the result of the dice roll hardcoded rather than a random
-value, and all other logic represented by functions without bodies because actually implementing
+value, and all other logic represented by 3.3 Functions without bodies because actually implementing
 them is out of scope for this example:
 
     let dice_roll = 9;

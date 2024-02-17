@@ -359,14 +359,14 @@ The ownership of a variable follows the same pattern every time: assigning a val
 variable moves it. When a variable that includes data on the heap goes out of scope, the value will
 be cleaned up by "drop", unless ownership of the data has been moved to another variable.
 
-While this works, taking ownership and then returning ownership with every functions is a bit
+While this works, taking ownership and then returning ownership with every 3.3 Functions is a bit
 tedious. What if we want to let a function use a value but not take ownership? It's quite annoying
 that anything we pass in also needs to be passed back if we want to use it again, in addition to any
 data resulting from the body of the function that we might want to return as well.
 
 Rust does let us return multiple values using a tuple:
  */
-
+/*
 fn fun() {
     let s1 = String::from("hello");
     let (s2, len) = calculate_length(s1);
@@ -379,9 +379,9 @@ fn calculate_length(s: String) -> (String, usize) {
     let length = s.len(); // len() returns the length of a String
     (s, length)
 }
-
+*/
 // *************************************************************************************************
 
 fn main() {
-    fun();
+
 }

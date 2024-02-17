@@ -8,7 +8,7 @@ long as it is in the scope of the caller function.
 
 fn arguments(x: i32, y: &str) {
     /*
-    We can define functions to have parameters, which are special variables that are part of a
+    We can define 3.3 Functions to have parameters, which are special variables that are part of a
     function's signature. When a function has parameters, you can provide it with concrete values
     for those parameters. The formal name for the parameters of a function is "arguments".
 
@@ -26,11 +26,11 @@ fn arguments(x: i32, y: &str) {
 fn statements_expressions() {
     /*
     Function bodies are made up of a series of statements optionally ending in an expression. So
-    far, the functions we've covered haven't included an ending expression, but you have seen an
+    far, the 3.3 Functions we've covered haven't included an ending expression, but you have seen an
     expression as part of a statement. Because Rust is an expression-based language, this is an
     important distinction to understand. Other languages don't have the same distinctions, so let's
     look at what statements and expressions are and how their differences affect the bodies of
-    functions.
+    3.3 Functions.
 
     * Statements are instructions that perform some action and do not return a value
     * Expressions evaluate to a resultant value. Let's look at some examples
@@ -74,9 +74,9 @@ fn statements_expressions() {
 // *************************************************************************************************
 // Functions with return
 /*
-In Rust, the return value of the functions is synonymous with the value of the final expression in
+In Rust, the return value of the 3.3 Functions is synonymous with the value of the final expression in
 the block of the body of a function. You can return early from a function by using the return
-keyword and specifying a value, but most functions return the last expression implicitly.
+keyword and specifying a value, but most 3.3 Functions return the last expression implicitly.
 The returned value of a function must be declared in the signature of the function with a "->"
 followed by the type the function returns:
  */

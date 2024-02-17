@@ -58,7 +58,7 @@ fn calculate_lenght(s: &String) -> usize { // s is a reference to a String
 
 The scope in which the variable "s" is valid is the same as any function parameter's scope, but the
 value pointed to by the reference is not dropped when "s" stops being used, because "s" doesn't have
-ownership. When functions have references as parameters instead of the actual values, we won't need
+ownership. When 3.3 Functions have references as parameters instead of the actual values, we won't need
 to return the values in order to give back ownership, because we never had ownership.
 
 We call the action of creating a reference "borrowing". As in real life, if a person owns something,

@@ -1,5 +1,5 @@
 /*
-Methods are similar to functions: we declare them with the "fn" keyword and a name, they can have
+Methods are similar to 3.3 Functions: we declare them with the "fn" keyword and a name, they can have
 parameters and a return value, and they contain some code that's run when the method is called from
 somewhere else. Unlike function, methods are defined within the context of a struct (or an enum or a
 trait object, which we cover in Chapter 6 and Chapter 17, respectively), and their first parameter
@@ -57,7 +57,7 @@ just "self" as the first parameter is rare; this technique is usually used when 
 transforms self into something else and you want to prevent the caller from using the original
 instance after the transformation.
 
-The main reason for using methods instead of functions, in addition to providing method syntax and
+The main reason for using methods instead of 3.3 Functions, in addition to providing method syntax and
 not having to repeat the type of self in every methods signature, is for organization. We've put all
 the things we can do with an instance of a type in one impl block rather than making future users of
 our code search for capabilities of Rectangle in various places in the library we provided.
@@ -212,17 +212,17 @@ fn main() {
 /*
 When we run this code, we'll get our desired output. Methods can take multiple parameters that we
 add to the signature after the self parameter, and those parameters work just like parameters in
-functions.
+3.3 Functions.
 
-Associated functions:
+Associated 3.3 Functions:
 
-All functions defined within an impl block are called associated functions because they're
-associated with the type named after the impl. We can define associated functions that don't have
+All 3.3 Functions defined within an impl block are called associated 3.3 Functions because they're
+associated with the type named after the impl. We can define associated 3.3 Functions that don't have
 self as their first parameter (and thus are not methods) because they don't need an instance of the
 type to work with. We've already used one function like this: the "String::from" function that's
 defined on the "String" type.
 
-Associated functions that aren't methods are often used for constructors that will return a new
+Associated 3.3 Functions that aren't methods are often used for constructors that will return a new
 instance of the struct. These are often called "new", but "new" isn't a special name and isn't built
 into the language. For example, we could choose to provide an associated function named square that
 would have one dimension parameter and use that as both width and height, thus making it easier to
@@ -242,7 +242,7 @@ appears after the impl keyword, which in this case is Rectangle.
 
 To call this associated function, we use the "::" syntax with the struct name;
 "let sq = Rectangle::square(3));" is an example. This function is namespaced by the struct: the "::"
-syntax is used for both associated functions and namespaces created by modules. We'll discuss
+syntax is used for both associated 3.3 Functions and namespaces created by modules. We'll discuss
 modules in Chapter 7.
 
 Each struct is allowed to have multiple impl blocks. For example, the previous code is equivalent to
@@ -270,7 +270,7 @@ Summary:
 
 Structs let you create custom types that are meaningful for your domain. By using structs, you can
 keep associated pieces of data connected to each other and name each piece to make your code clear.
-In impl blocks, you can define functions that are associated with your type, and methods are a kind
+In impl blocks, you can define 3.3 Functions that are associated with your type, and methods are a kind
 of associated function that let you specify the behavior that instances of your struct have.
 
 But structs aren't the only way you can create custom types: let's turn to Rust's enum feature to
