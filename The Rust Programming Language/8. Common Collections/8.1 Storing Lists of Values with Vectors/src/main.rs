@@ -107,6 +107,16 @@ fn iterating_values_in_a_vector() {
     }
 }
 
+fn raising_errors_with_vectors() {
+    let v = vec![1, 2, 3, 4, 5];
+
+    // code panics when you try to access a value out of the vector when using []
+    let does_not_exist = &v[100];
+
+    // get() returns None when you try to access a value of the vector
+    let does_not_exist = v.get(100);
+}
+
 fn using_an_enum_to_store_multiple_types() {
     /*
     Vectors can only store values that are the same type. This can be inconvenient; there are
@@ -160,5 +170,5 @@ fn dropping_a_vector_drops_its_elements() {
 }
 
 fn main() {
-   using_an_enum_to_store_multiple_types();
+    raising_errors_with_vectors();
 }
