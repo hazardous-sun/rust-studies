@@ -1,6 +1,6 @@
 /*
 You made it! This was a sizable chapter: you learned about variables, scalar and compound data
-types, functions, comments, if expressions, and loops! To practice with the concepts discussed in
+types, 3.3 Functions, comments, if expressions, and loops! To practice with the concepts discussed in
 this chapter, try building programs to do the following:
 
 1. Convert temperatures between Fahrenheit and Celsius.
