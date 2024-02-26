@@ -7,7 +7,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use env::current_dir;
 use std::process::exit;
-use image::{GenericImageView, Pixel, Rgb, Rgba};
+use image::{GenericImageView, Pixel, Rgb};
 
 fn get_rgb(path: &String, x: i32, y: i32) {
     screenshot_full(path.clone());
