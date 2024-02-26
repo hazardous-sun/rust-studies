@@ -1,23 +1,51 @@
+use std::env;
+use std::fs;
 use enigo::Enigo;
 use enigo::MouseControllable;
 use screenshot_rs::screenshot_full;
 use std::thread::sleep;
 use std::time::Duration;
-use image;
+use env::current_dir;
+use std::process::exit;
+use image::{GenericImageView, Pixel, Rgb, Rgba};
 
-fn get_rgb(x: i32, y: i32) {
-    let path = String::from("/home/solaire/RustroverProjects/rust-studies/Color picker/color_picker/screenshot.png");
-    screenshot_full(path);
+fn get_rgb(path: &String, x: i32, y: i32) {
+    screenshot_full(path.clone());
+    let image = image::open(path).expect("Failed to open image");
+    let pixel = image.get_pixel(x as u32, y as u32);
 
-    let pixel = image::GenericImageView::get_pixel(path, x as u32, y as u32);
+    // Handle both Rgb<u8> and Rgba<u8>
+    match pixel.channels() {
+        [r, g, b] => {
+            let rgb_pixel: Rgb<u8> = Rgb([r.clone(), g.clone(), b.clone()]);
+            println!("({}, {}): {:?}", x, y, rgb_pixel);
+        }
+        [r, g, b, _a] => {
+            let rgb_pixel: Rgb<u8> = Rgb([r.clone(), g.clone(), b.clone()]);
+            println!("({}, {}): {:?}", x, y, rgb_pixel);
+        }
+        _ => {
+            eprintln!("Unexpected pixel format");
+            exit(2);
+        }
+    }
+
+    match fs::remove_file(path) {
+        Ok(_) => {},
+        Err(e) => {
+            eprintln!("Error removing file: {e}");
+            exit(1);
+        }
+    }
 }
+
 
 fn main() {
     let enigo = Enigo::new();
+    let path = current_dir().unwrap().to_str().unwrap().to_string() + "/tempscreenshot.png";
     while true {
         let (x, y) = enigo.mouse_location();
-        println!("x: {x} | y: {y}");
-        get_rgb(x, y);
-        sleep(Duration::from_secs(2));
+        get_rgb(&path, x, y);
+        sleep(Duration::from_secs(1));
     }
 }
