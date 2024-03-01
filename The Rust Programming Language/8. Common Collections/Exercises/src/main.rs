@@ -11,12 +11,17 @@ fn exercise_1() {
     the list.
      */
 
-    let mut values = vec![1,2,3,4,5,6,7,5,5,5,5,5,5,5,8,9,10,1,2,4,6,3,1,4,61,74,3];
+    let mut values = vec![
+        1, 2, 3, 4, 5, 6, 7, 5, 5, 5, 5, 5, 5, 5, 8, 9, 10, 1, 2, 4, 6, 3, 1, 4, 61, 74, 3,
+    ];
     let mean = exercise_1_mean(&mut values);
     let median = exercise_1_median(&mut values);
     let mode = exercise_1_mode(&mut values);
 
-    println!("Values: {:?}\nMean: {}\tMedian: {}\tMode: {:?}", values, mean, median, mode);
+    println!(
+        "Exercise 1:\nValues: {:?}\nMean: {}\tMedian: {}\tMode: {:?}\n",
+        values, mean, median, mode
+    );
 }
 
 fn exercise_1_mean(values: &mut Vec<i32>) -> i32 {
@@ -34,20 +39,23 @@ fn exercise_1_median(values: &mut Vec<i32>) -> i32 {
 }
 
 fn exercise_1_mode(values: &mut Vec<i32>) -> (i32, i32) {
-    let mut map = HashMap::new();
+    let mut map: HashMap<&i32, i32> = HashMap::new();
     for element in values {
-        let count = map.entry(element.clone()).or_insert(0);
+        let count = map.entry(element).or_insert(0);
         *count += 1;
     }
     let mut mode: Option<(i32, i32)> = None;
     for (key, value) in map.iter() {
         match mode {
-            Some((_, max_value)) if value > &max_value => {
-                mode = Some((key.clone(), value.clone()));
+            Some((_, stored_value)) if value > &stored_value => {
+                mode = Some((**key, *value));
             }
             Some(_) => {}
-            None => mode = Some((key.clone(), value.clone()))
+            None => mode = Some((**key, *value)),
         }
     }
-    mode.unwrap()
+    match mode {
+        Some(_) => mode.unwrap(),
+        None => (-1, -1),
+    }
 }
