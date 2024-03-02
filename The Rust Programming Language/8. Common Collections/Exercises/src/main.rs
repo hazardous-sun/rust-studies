@@ -109,27 +109,30 @@ fn exercise_2_convert_string(original_string: &String) -> String {
 // ********************************************************
 fn exercise_3() {
     /*
-    Using a hash map and vectors, create a text interface to allow a user to add employee names to a 
-    department in a company. For example, “Add Sally to Engineering” or “Add Amir to Sales.” Then 
-    let the user retrieve a list of all people in a department or all people in the company by 
+    Using a hash map and vectors, create a text interface to allow a user to add employee names to a
+    department in a company. For example, “Add Sally to Engineering” or “Add Amir to Sales.” Then
+    let the user retrieve a list of all people in a department or all people in the company by
     department, sorted alphabetically.
      */
 
-    let mut company: HashMap<String, Vec<_>> = HashMap::new();
+    let mut company: HashMap<String, Vec<String>> = HashMap::new();
     let mut input = String::new();
 
-    println!("\
+    println!(
+        "\
     1. List all people in company\n\
     2. List departments\n\
     3. List all people in a department\n\
     4. Add department\n\
-    5. Add employee to department\n");
+    5. Add employee to department\n\
+    6. Quit"
+    );
 
     loop {
         get_user_input(&mut input);
         let choice: i32 = match input.trim().parse() {
             Ok(value) => value,
-            Err(_) => continue
+            Err(_) => continue,
         };
         match choice {
             1 => exercise_3_list_people_company(&mut company),
@@ -137,27 +140,70 @@ fn exercise_3() {
             3 => exercise_3_list_people_department(&mut company),
             4 => exercise_3_add_department(&mut company),
             5 => exercise_3_add_people_department(&mut company),
-            _ => continue
+            6 => break,
+            _ => continue,
         }
     }
 }
 
 fn get_user_input(input: &mut String) {
+    input.clear();
     io::stdin()
         .read_line(input)
         .expect("Failed to read user input");
+    input.pop();
+    input.make_ascii_lowercase();
 }
 
-fn exercise_3_list_people_company(company: &mut HashMap<String, Vec<String>>) {}
+fn exercise_3_list_people_company(company: &mut HashMap<String, Vec<String>>) {
+    for (department, all_employees) in company {
+        print!("{department}: ");
+        for employee in all_employees {
+            print!(" {employee}");
+        }
+        println!();
+    }
+}
 
-fn exercise_3_list_departments(company: &mut HashMap<String, Vec<String>>) {}
+fn exercise_3_list_departments(company: &mut HashMap<String, Vec<String>>) {
+    println!("{:?}", &company.keys());
+}
 
-fn exercise_3_list_people_department(company: &mut HashMap<String, Vec<String>>) {}
+fn exercise_3_list_people_department(company: &mut HashMap<String, Vec<String>>) {
+    let mut department = String::new();
+    get_user_input(&mut department);
+    match company.get(&department) {
+        Some(names) => {
+            println!("{department} = {:?}", names);
+        },
+        None => {
+            eprintln!("\x1B[31mERROR\x1B[0m: Department does not exists inside company.");
+        }
+    }
+}
 
 fn exercise_3_add_department(company: &mut HashMap<String, Vec<String>>) {
     let mut department = String::new();
     get_user_input(&mut department);
-    company.entry(department.clone()).or_else(Vec::new());
+    match &company.contains_key(&department) {
+        false => { &company.insert(department.clone(), Vec::new()); },
+        true => eprintln!("\x1B[31mERROR\x1B[0m: Department '{}' already exists", department)
+    };
 }
 
-fn exercise_3_add_people_department(company: &mut HashMap<String, Vec<String>>) {}
+fn exercise_3_add_people_department(company: &mut HashMap<String, Vec<String>>) {
+    let mut department = String::new();
+    let mut name = String::new();
+    print!("Department: ");
+    get_user_input(&mut department);
+    print!("Name: ");
+    get_user_input(&mut name);
+    match company.get_mut(&department) {
+        Some(vector) => {
+            vector.push(name.clone());
+        }
+        None => {
+            eprintln!("\x1B[31mERROR\x1B[0m: Department does not exists inside company.");
+        }
+    };
+}
