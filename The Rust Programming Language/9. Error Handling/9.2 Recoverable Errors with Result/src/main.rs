@@ -261,6 +261,211 @@ fn propagating_errors() {
      */
 }
 
+fn shortcut_for_propagating_errors() {
+    /*
+    Listing 9-7 shows an implementation of read_username_from_file that has the same functionality
+    as in Listing 9-6, but this implementation uses the ? operator.
+     */
+
+    use std::fs::File;
+    use std::io::{self, Read};
+
+    fn read_username_from_file() -> Result<String, io::Error> {
+        let mut username_file = File::open("hello.txt")?;
+        let mut username = String::new();
+        username_file.read_to_string(&mut username)?;
+        Ok(username)
+    }
+
+    /*
+    The ? placed after a Result value is defined to work in almost the same way as the match
+    expressions we defined to handle the Result values in Listing 9-6. If the value of the Result is
+    an Ok, the value inside the Ok will get returned from this expression, and the program will
+    continue. If the value is an Err, the Err will be returned from the whole function as if we had
+    used the return keyword so the error value gets propagated to the calling code.
+
+    There is a difference between what the match expression from Listing 9-6 does and what the ?
+    operator does: error values that have the ? operator called on them go through the from
+    function, defined in the From trait in the standard library, which is used to convert values
+    from one type into another. When the ? operator calls the from function, the error type received
+    is converted into the error type defined in the return type of the current function. This is
+    useful when a function returns one error type to represent all the ways a function might fail,
+    even if parts might fail for many different reasons.
+
+    For example, we could change the read_username_from_file function in Listing 9-7 to return a
+    custom error type named OurError that we define. If we also define impl From<io::Error> for
+    OurError to construct an instance of OurError from an io::Error, then the ? operator calls in
+    the body of read_username_from_file will call from and convert the error types without needing
+    to add any more code to the function.
+
+    In the context of Listing 9-7, the ? at the end of the File::open call will return the value
+    inside an Ok to the variable username_file. If an error occurs, the ? operator will return early
+    out of the whole function and give any Err value to the calling code. The same thing applies to
+    the ? at the end of the read_to_string call.
+
+    The ? operator eliminates a lot of boilerplate and makes this function’s implementation simpler.
+    We could even shorten this code further by chaining method calls immediately after the ?, as
+    shown in Listing 9-8.
+     */
+
+    fn read_username_from_file_shortened() -> Result<String, io::Error> {
+        let mut username = String::new();
+
+        File::open("hello.txt")?.read_to_string(&mut username)?;
+
+        Ok(username)
+    }
+
+    /*
+    We’ve moved the creation of the new String in username to the beginning of the function; that
+    part hasn’t changed. Instead of creating a variable username_file, we’ve chained the call to
+    read_to_string directly onto the result of File::open("hello.txt")?. We still have a ? at the
+    end of the read_to_string call, and we still return an Ok value containing username when both
+    File::open and read_to_string succeed rather than returning errors. The functionality is again
+    the same as in Listing 9-6 and Listing 9-7; this is just a different, more ergonomic way to
+    write it.
+
+    Listing 9-9 shows a way to make this even shorter using fs::read_to_string.
+     */
+
+
+    fn read_username_from_file_shortened_2() -> Result<String, io::Error> {
+        use std::fs;
+        fs::read_to_string("hello.txt")
+    }
+
+    /*
+    Reading a file into a string is a fairly common operation, so the standard library provides the
+    convenient fs::read_to_string function that opens the file, creates a new String, reads the
+    contents of the file, puts the contents into that String, and returns it. Of course, using
+    fs::read_to_string doesn’t give us the opportunity to explain all the error handling, so we did
+    it the longer way first.
+     */
+}
+
+fn where_the_question_mark_operator_can_be_used() {
+    /*
+    The ? operator can only be used in functions whose return type is compatible with the value the
+    ? is used on. This is because the ? operator is defined to perform an early return of a value
+    out of the function, in the same manner as the match expression we defined in Listing 9-6. In
+    Listing 9-6, the match was using a Result value, and the early return arm returned an Err(e)
+    value. The return type of the function has to be a Result so that it’s compatible with this
+    return.
+
+    In Listing 9-10, let’s look at the error we’ll get if we use the ? operator in a main function
+    with a return type incompatible with the type of the value we use ? on:
+     */
+
+    use std::fs::File;
+
+    let greeting_file = File::open("hello.txt")?;
+
+    /*
+    This code opens a file, which might fail. The ? operator follows the Result value returned by
+    File::open. If we put this into a main function that has the return type of (), not Result, when
+    compiling this code, we would get the following error message:
+
+$ cargo run
+   Compiling error-handling v0.1.0 (file:///projects/error-handling)
+error[E0277]: the `?` operator can only be used in a function that returns `Result` or `Option` (or another type that implements `FromResidual`)
+ --> src/main.rs:4:48
+  |
+3 | fn main() {
+  | --------- this function should return `Result` or `Option` to accept `?`
+4 |     let greeting_file = File::open("hello.txt")?;
+  |                                                ^ cannot use the `?` operator in a function that returns `()`
+  |
+  = help: the trait `FromResidual<Result<Infallible, std::io::Error>>` is not implemented for `()`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `error-handling` due to previous error
+
+    This error points out that we’re only allowed to use the ? operator in a function that returns
+    Result, Option, or another type that implements FromResidual.
+
+    To fix the error, you have two choices. One choice is to change the return type of your function
+    to be compatible with the value you’re using the ? operator on as long as you have no
+    restrictions preventing that. The other technique is to use a match or one of the Result<T, E>
+    methods to handle the Result<T, E> in whatever way is appropriate.
+
+    The error message also mentioned that ? can be used with Option<T> values as well. As with
+    using ? on Result, you can only use ? on Option in a function that returns an Option. The
+    behavior of the ? operator when called on an Option<T> is similar to its behavior when
+    called on a Result<T, E>: if the value is None, the None will be returned early from the
+    function at that point. If the value is Some, the value inside the Some is the resulting value
+    of the expression and the function continues. Listing 9-11 has an example of a function that
+    finds the last character of the first line in the given text:
+     */
+
+    fn last_char_of_first_line(text: &str) -> Option<char> {
+        text.lines().next()?.chars().last()
+    }
+
+    /*
+    This function returns Option<char> because it’s possible that there is a character there, but
+    it’s also possible that there isn’t. This code takes the text string slice argument and calls
+    the lines method on it, which returns an iterator over the lines in the string. Because this
+    function wants to examine the first line, it calls next on the iterator to get the first value
+    from the iterator. If text is the empty string, this call to next will return None, in which
+    case we use ? to stop and return None from last_char_of_first_line. If text is not the empty
+    string, next will return a Some value containing a string slice of the first line in text.
+
+    The ? extracts the string slice, and we can call chars on that string slice to get an iterator
+    of its characters. We’re interested in the last character in this first line, so we call last to
+    return the last item in the iterator. This is an Option because it’s possible that the first
+    line is the empty string, for example if text starts with a blank line but has characters on
+    other lines, as in "\nhi". However, if there is a last character on the first line, it will be
+    returned in the Some variant. The ? operator in the middle gives us a concise way to express
+    this logic, allowing us to implement the function in one line. If we couldn’t use the ? operator
+    on Option, we’d have to implement this logic using more method calls or a match expression.
+
+    Note that you can use the ? operator on a Result in a function that returns Result, and you can
+    use the ? operator on an Option in a function that returns Option, but you can’t mix and match.
+    The ? operator won’t automatically convert a Result to an Option or vice versa; in those cases,
+    you can use methods like the ok method on Result or the ok_or method on Option to do the
+    conversion explicitly.
+
+    So far, all the main functions we’ve used return (). The main function is special because it’s
+    the entry and exit point of executable programs, and there are restrictions on what its return
+    type can be for the programs to behave as expected.
+
+    Luckily, main can also return a Result<(), E>. Listing 9-12 has the code from Listing 9-10 but
+    we’ve changed the return type of main to be Result<(), Box<dyn Error>> and added a return value
+    Ok(()) to the end. This code will now compile:
+     */
+
+    /*
+    fn main() -> Result<(), Box<dyn Error>> {
+        let greeting_file = File::open("hello.txt")?;
+
+        Ok(())
+    }
+    */
+
+    /*
+    The Box<dyn Error> type is a trait object, which we’ll talk about in the “Using Trait Objects
+    that Allow for Values of Different Types” section in Chapter 17. For now, you can read
+    Box<dyn Error> to mean “any kind of error.” Using ? on a Result value in a main function with
+    the error type Box<dyn Error> is allowed, because it allows any Err value to be returned early.
+    Even though the body of this main function will only ever return errors of type std::io::Error,
+    by specifying Box<dyn Error>, this signature will continue to be correct even if more code that
+    returns other errors is added to the body of main.
+
+    When a main function returns a Result<(), E>, the executable will exit with a value of 0 if main
+    returns Ok(()) and will exit with a nonzero value if main returns an Err value. Executables
+    written in C return integers when they exit: programs that exit successfully return the integer
+    0, and programs that error return some integer other than 0. Rust also returns integers from
+    executables to be compatible with this convention.
+
+    The main function may return any types that implement the std::process::Termination trait, which
+    contains a function report that returns an ExitCode. Consult the standard library documentation
+    for more information on implementing the Termination trait for your own types.
+
+    Now that we’ve discussed the details of calling panic! or returning Result, let’s return to the
+    topic of how to decide which is appropriate to use in which cases.
+     */
+}
+
 fn main() {
     shortcuts_for_panic_on_error();
 }
