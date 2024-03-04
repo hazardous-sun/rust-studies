@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io;
+use std::io::{stdout, stdin, Write};
 
 fn main() {
     print_separator();
@@ -117,17 +117,7 @@ fn exercise_3() {
 
     let mut company: HashMap<String, Vec<String>> = HashMap::new();
     let mut input = String::new();
-
-    println!(
-        "\
-    1. List all people in company\n\
-    2. List departments\n\
-    3. List all people in a department\n\
-    4. Add department\n\
-    5. Add employee to department\n\
-    6. Quit"
-    );
-
+    print_options();
     loop {
         get_user_input(&mut input);
         let choice: i32 = match input.trim().parse() {
@@ -141,23 +131,36 @@ fn exercise_3() {
             4 => exercise_3_add_department(&mut company),
             5 => exercise_3_add_people_department(&mut company),
             6 => break,
-            _ => continue,
+            _ => print_options(),
         }
     }
 }
 
 fn get_user_input(input: &mut String) {
     input.clear();
-    io::stdin()
+    stdin()
         .read_line(input)
         .expect("Failed to read user input");
     input.pop();
     input.make_ascii_lowercase();
 }
 
+fn print_options() {
+    println!(
+        "\
+    1. List all people in company\n\
+    2. List departments\n\
+    3. List all people in a department\n\
+    4. Add department\n\
+    5. Add employee to department\n\
+    6. Quit"
+    )
+}
+
 fn exercise_3_list_people_company(company: &mut HashMap<String, Vec<String>>) {
     for (department, all_employees) in company {
-        print!("{department}: ");
+        all_employees.sort();
+        print!("{department}:");
         for employee in all_employees {
             print!(" {employee}");
         }
@@ -175,7 +178,7 @@ fn exercise_3_list_people_department(company: &mut HashMap<String, Vec<String>>)
     match company.get(&department) {
         Some(names) => {
             println!("{department} = {:?}", names);
-        },
+        }
         None => {
             eprintln!("\x1B[31mERROR\x1B[0m: Department does not exists inside company.");
         }
@@ -184,9 +187,11 @@ fn exercise_3_list_people_department(company: &mut HashMap<String, Vec<String>>)
 
 fn exercise_3_add_department(company: &mut HashMap<String, Vec<String>>) {
     let mut department = String::new();
+    print!("Department: ");
+    stdout().flush().expect("\x1B[31mERROR\x1B[0m: Failed to flush stdout");
     get_user_input(&mut department);
     match &company.contains_key(&department) {
-        false => { &company.insert(department.clone(), Vec::new()); },
+        false => { company.insert(department.clone(), Vec::new()); }
         true => eprintln!("\x1B[31mERROR\x1B[0m: Department '{}' already exists", department)
     };
 }
@@ -195,8 +200,10 @@ fn exercise_3_add_people_department(company: &mut HashMap<String, Vec<String>>) 
     let mut department = String::new();
     let mut name = String::new();
     print!("Department: ");
+    stdout().flush().expect("\x1B[31mERROR\x1B[0m: Failed to flush stdout");
     get_user_input(&mut department);
     print!("Name: ");
+    stdout().flush().expect("\x1B[31mERROR\x1B[0m: Failed to flush stdout");
     get_user_input(&mut name);
     match company.get_mut(&department) {
         Some(vector) => {
